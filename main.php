@@ -5,23 +5,17 @@ ini_set('memory_limit', '1024M');
 require_once __DIR__ . '/vendor/autoload.php';
 
 use Phpml\Metric\ClassificationReport;
+use Phpml\Metric\Accuracy;
+use Phpml\Metric\ConfusionMatrix;
 use TextClassification\Sample;
-use TextClassification\Jieba;
+use TextClassification\Models\KNearestNeighbors;
+use TextClassification\Models\NaiveBayes;
+use TextClassification\Models\LinearSvc;
+use TextClassification\Models\MLPClassifier;
+use TextClassification\Text;
 use Phpml\ModelManager;
-use Phpml\SupportVectorMachine\Kernel;
 use Phpml\Tokenization\WhitespaceTokenizer;
 use Phpml\FeatureExtraction\TokenCountVectorizer;
-use Phpml\Classification\Classifier;
-use Phpml\Classification\KNearestNeighbors;
-use Phpml\Classification\MLPClassifier;
-use Phpml\Classification\NaiveBayes;
-use Phpml\Classification\SVC;
-use Phpml\SupportVectorMachine\Kernel as SVCKernel;
-use Phpml\Math\Distance\Minkowski;
-use Phpml\NeuralNetwork\ActivationFunction\PReLU;
-use Phpml\NeuralNetwork\ActivationFunction\Sigmoid;
-use Phpml\NeuralNetwork\Layer;
-use Phpml\NeuralNetwork\Node\Neuron;
 
 $stopWordsFile = __DIR__ . '/data/stop_words.txt';
 $textFile = __DIR__ . '/data/toutiao_cat_data.txt';
@@ -30,44 +24,48 @@ $offset = 0;
 $length = 100;
 
 $sample = new Sample($textFile, $stopWordsFile, $offset, $length);
-$sampleX = $sample->getSplitTrainX();
-$sampleY = $sample->getSplitTrainY();
-
-$vectorizer = new TokenCountVectorizer(new WhitespaceTokenizer());
-
-$vectorizer->fit($sampleX);
-
-$vectorizer->transform($sampleX);
-
-$classifier = new SVC(
-    Kernel::LINEAR, // $kernel
-    1.0,            // $cost
-    3,              // $degree
-    null,           // $gamma
-    0.0,            // $coef0
-    0.001,          // $tolerance
-    100,            // $cacheSize
-    true,           // $shrinking
-    false            // $probabilityEstimates, set to true
-);
-$classifier->train($sampleX, $sampleY);
-
-
+$trainX = $sample->getSplitTrainX();
+$trainY = $sample->getSplitTrainY();
 $testX = $sample->getSplitTestX();
 $testY = $sample->getSplitTestY();
 
-$jieba = new Jieba($stopWordsFile);
-$predictY = [];
+$vectorizer = new TokenCountVectorizer(new WhitespaceTokenizer());
+$vectorizer->fit($trainX);
+$vectorizer->transform($trainX);
 
-foreach ($testX as $test) {
-    $testSampleText = [$test];
+function getMetrics($model) {
+    global $vectorizer, $testX, $testY, $textFile, $stopWordsFile;
 
-    $vectorizer->transform($testSampleText);
+    $classifier = $model->train();
 
-    $predictY[] = current($classifier->predict($testSampleText));
+    $predictY = [];
+    foreach ($testX as $test) {
+        $testSampleText = [$test];
+
+        $vectorizer->transform($testSampleText);
+
+        $predictY[] = current($classifier->predict($testSampleText));
+    }
+
+//    $text = new Text($textFile);
+//    $categoryIds = $text->getCategoryIds();
+//    var_dump(ConfusionMatrix::compute($testY, $predictY, $categoryIds));
+
+    var_dump(['score' => Accuracy::score($testY, $predictY)]);
+
+    $report = new ClassificationReport($testY, $predictY);
+    var_dump(['report' => $report->getAverage()]);
 }
 
-var_dump($testY, $predictY);
+$models = [
+    new NaiveBayes($trainX, $trainY),
+    new KNearestNeighbors($trainX, $trainY),
+    new LinearSvc($trainX, $trainY),
+    new MLPClassifier($trainX, $trainY)
+];
 
-$report = new ClassificationReport($testY, $predictY);
-var_dump($report->getAverage());
+foreach ($models as $model) {
+    echo "model: " . get_class($model) . PHP_EOL;
+
+    getMetrics($model);
+}
