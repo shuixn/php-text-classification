@@ -1,0 +1,4 @@
+/vendor/
+composer.lock
+.idea
+data/toutiao_cat_data.txt

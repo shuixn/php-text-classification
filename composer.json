@@ -1,0 +1,22 @@
+{
+    "name": "funsoul/php-text-classification",
+    "description": ":snowflake: text classification based on php-ml",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "funsoul",
+            "email": "912387963@qq.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.1",
+        "php-ai/php-ml": "^0.8.0",
+        "fukuball/jieba-php": "dev-master"
+    },
+    "autoload": {
+        "psr-4": {
+            "TextClassification\\": "src/"
+        }
+    }
+}
