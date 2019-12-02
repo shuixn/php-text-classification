@@ -1,10 +1,11 @@
 # php-text-classification
 :snowflake: text classification based on php-ml
 
+使用头条数据集，基于php-ml写中文文本分类
+
 - SVM
 - KNN
 - NaiveBayes
-- MLPClassifier
 
 ### Installation
 
@@ -15,53 +16,66 @@ composer install
 
 ### Test Report(100 of samples)
 
-```php
-model: TextClassification\Models\NaiveBayes
-array(1) {
-  ["score"]=>
-  float(0.69111111111111)
-}
-array(1) {
-  ["report"]=>
-  array(3) {
-    ["precision"]=>
-    float(0.70512472512699)
-    ["recall"]=>
-    float(0.69111111111111)
-    ["f1score"]=>
-    float(0.69060989408364)
-  }
-}
-model: TextClassification\Models\KNearestNeighbors
-array(1) {
-  ["score"]=>
-  float(0.43777777777778)
-}
-array(1) {
-  ["report"]=>
-  array(3) {
-    ["precision"]=>
-    float(0.76090004609655)
-    ["recall"]=>
-    float(0.43777777777778)
-    ["f1score"]=>
-    float(0.49691418502695)
-  }
-}
+#### SVC
+
+```vim
 model: TextClassification\Models\LinearSvc
 array(1) {
   ["score"]=>
-  float(0.69111111111111)
+  float(0.72222222222222)
 }
 array(1) {
   ["report"]=>
   array(3) {
     ["precision"]=>
-    float(0.74841797069747)
+    float(0.85198473935693)
     ["recall"]=>
-    float(0.69111111111111)
+    float(0.72222222222222)
     ["f1score"]=>
-    float(0.70254435831638)
+    float(0.75601694560694)
+  }
+}
+```
+
+#### NaiveBayes
+
+```vim
+model: TextClassification\Models\NaiveBayes
+array(1) {
+  ["score"]=>
+  float(0.76444444444444)
+}
+array(1) {
+  ["report"]=>
+  array(3) {
+    ["precision"]=>
+    float(0.77484672622763)
+    ["recall"]=>
+    float(0.76444444444444)
+    ["f1score"]=>
+    float(0.76481474408685)
+  }
+}
+```
+
+#### KNearestNeighbors
+
+```php
+
+model: TextClassification\Models\KNearestNeighbors
+array(1) {
+  ["score"]=>
+  float(0.19777777777778)
+}
+array(1) {
+  ["report"]=>
+  array(3) {
+    ["precision"]=>
+    float(0.71794737986519)
+    ["recall"]=>
+    float(0.19777777777778)
+    ["f1score"]=>
+    float(0.22515611166428)
   }
 }
 ```

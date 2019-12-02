@@ -5,7 +5,6 @@ namespace TextClassification\Models;
 
 use Phpml\Classification\Classifier;
 use Phpml\Classification\MLPClassifier as MLP;
-use Phpml\Math\Distance\Minkowski;
 use Phpml\NeuralNetwork\ActivationFunction\PReLU;
 use Phpml\NeuralNetwork\ActivationFunction\Sigmoid;
 use Phpml\NeuralNetwork\Layer;
